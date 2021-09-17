@@ -61,37 +61,37 @@ rates:
 
   # default local rate limits applied to each project
   default:
-    auth/tokens:
+    auth/tokens/*:
       - action: authenticate
         limit: 5000r/m
       - action: read
         limit: 5000r/m
       - action: list
         limit: 5000r/m
-    versions:
+    versions/*:
       - action: read
         limit: 500r/m
-    users:
+    users/*:
       - action: read
         limit: 3000r/m
       - action: list
         limit: 3000r/m             
-    s3token:
+    s3token/*:
       - action: authenticate
         limit: 1000r/m
-    projects:
+    projects/*:
       - action: read
         limit: 3000r/m
       - action: update
         limit: 2000r/m
       - action: list
         limit: 3000r/m                
-    healthcheck:
+    healthcheck/*:
       - action: read
         limit: 3000r/m
-    root:
+    root/*:
       - action: read
         limit: 3000r/m
-    OS-INHERIT:
+    OS-INHERIT/*:
       - action: read
         limit: 3000r/m
