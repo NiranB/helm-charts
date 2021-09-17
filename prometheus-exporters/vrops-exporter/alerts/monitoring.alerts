@@ -15,7 +15,7 @@ groups:
       summary: "`{{ $labels.target }}` API is down. Monitoring of vCenter and NSX-T is no longer available."
 
   - alert: VROpsExporterDegraded
-    expr: sum by (target) (vrops_api_response) / count by (target) (vrops_api_response) >= 400
+    expr: 200 < sum by (target) (vrops_api_response) / count by (target) (vrops_api_response) <= 499
     for: 10m
     labels:
       severity: info
@@ -82,8 +82,20 @@ groups:
       severity: info
       tier: vmware
       service: nsxt adapter
-      meta: "vROPs is not receiving data for NSX-T adapter {{ $labels.nsxt_adapter }} not receiving data. {{ $labels.recommendation_2 }}"
+      meta: "vROPs NSX-T adapter is not receiving data for {{ $labels.nsxt_adapter }}. {{ $labels.recommendation_2 }}"
       no_alert_on_absence: "true"
     annotations:
-      description: "vROPs is not receiving data for NSX-T adapter {{ $labels.nsxt_adapter }} not receiving data. {{ $labels.recommendation_2 }}"
-      summary: "vROPs is not receiving data for NSX-T adapter {{ $labels.nsxt_adapter }} not receiving data. {{ $labels.recommendation_2 }}"
+      description: "vROPs NSX-T adapter is not receiving data for {{ $labels.nsxt_adapter }}. {{ $labels.recommendation_2 }}"
+      summary: "vROPs NSX-T adapter is not receiving data for {{ $labels.nsxt_adapter }}. {{ $labels.recommendation_2 }}"
+
+  - alert: VROPsInstanceNotReportingMetrics
+    expr: sum by (hostsystem,vcenter) (vrops_virtualmachine_runtime_powerstate) unless sum by (hostsystem, vcenter) (vrops_hostsystem_hardware_number_of_cpu_cores_info) 
+    labels:
+      severity: info
+      tier: vmware
+      service: vrops instance
+      meta: "vROPs instance for {{ $labels.vcenter }} is not reporting any metrics anymore. Consider restarting the instance."
+      no_alert_on_absence: "true"
+    annotations:
+      description: "vROPs instance for {{ $labels.vcenter }} is not reporting any metrics anymore. Consider restarting the instance."
+      summary: "vROPs instance for {{ $labels.vcenter }} is not reporting any metrics anymore. Consider restarting the instance."

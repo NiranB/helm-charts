@@ -72,6 +72,8 @@ spec:
         - name: cloud_admin
           role_assignments:
             - user: keppel@Default
+              role: service       # to validate users' Keystone tokens
+            - user: keppel@Default
               role: swiftreseller # to read/write blobs and manifests from/into customer's Swift accounts
         - name: master
           role_assignments:
@@ -91,4 +93,11 @@ spec:
           role_assignments:
             - domain: {{.}}
               role: registry_admin
+      {{- if eq . "monsoon3" }}
+      projects:
+        - name: cc-demo
+          role_assignments:
+          - group: MONSOON3_DOMAIN_ADMINS
+            role: registry_admin
+      {{- end }}
     {{- end }}

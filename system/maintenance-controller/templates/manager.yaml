@@ -6,6 +6,9 @@ metadata:
 type: Opaque
 data: 
   maintenance.yaml: {{ tpl .Values.config . | b64enc }}
+  {{- if .Values.esx.enabled }}
+  esx.yaml: {{ required "A esx maintenance configuration is required" .Values.esx.config | b64enc }}
+  {{- end }}
 
 ---
 apiVersion: apps/v1
@@ -24,6 +27,9 @@ spec:
     metadata:
       labels:
         app: maintenance-controller
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/targets: kubernetes
     spec:
       affinity:
         podAntiAffinity:
@@ -40,6 +46,9 @@ spec:
         - /manager
         args:
         - --enable-leader-election
+        {{- if .Values.esx.enabled }}
+        - --enable-esx-maintenance
+        {{- end }}
         image: "{{required ".Values.global.registry is missing" .Values.global.registry }}/{{ .Values.image.repository }}:{{required ".Values.image.tag is missing" .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: manager
@@ -49,17 +58,20 @@ spec:
           readOnly: true
         resources:
           limits:
-            cpu: 100m
-            memory: 30Mi
+            cpu: 200m
+            memory: 256Mi
           requests:
-            cpu: 100m
-            memory: 20Mi
+            cpu: 200m
+            memory: 128Mi
         livenessProbe:
           httpGet:
             path: /healthz
             port: 8081
           initialDelaySeconds: 3
           periodSeconds: 3
+        ports:
+          - name: metrics
+            containerPort: 8080
       volumes:
       - name: config
         secret:

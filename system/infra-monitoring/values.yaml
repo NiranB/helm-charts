@@ -475,7 +475,11 @@ prometheus_infra_collector:
 
   retentionTime: 1h
   scrapeInterval: "60s"
-
+  
+  serviceDiscoveries:
+    scrapeInterval: 60s
+    scrapeTimeout: 55s
+  
   additionalScrapeConfigs:
     name: infra-collector-additional-scrape-config
     key: scrape-config.yaml
@@ -495,9 +499,6 @@ prometheus_infra_collector:
     requests:
       cpu: 500m
       memory: 4Gi
-  serviceDiscoveries:
-    pods:
-      enabled: true
   rbac:
     create: true
 
@@ -694,5 +695,5 @@ network_generic_ssh_exporter:
 
 esxi_host_exporter:
   enabled: false
-  scrapeInterval: 2m
-  scrapeTimeout: 115s
+  scrapeInterval: 5m
+  scrapeTimeout: 295s
